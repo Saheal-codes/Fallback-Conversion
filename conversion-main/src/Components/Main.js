@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { Dialog } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
@@ -8,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Dropdown1 from "./Dropdown1";
 import { Fragment } from "react";
 import { Menu, Transition } from "@headlessui/react";
-import { addFile } from "../reducer/reducer1";
+// import { addFile } from "../reducer/reducer1"; // not being used cuz of the inability of redux to process the serialized file
 import Filetable from "./fileTable";
 
 const navigation = [
@@ -23,17 +24,42 @@ function classNames(...classes) {
 }
 
 export default function Main() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false); // For mobile menu
 
-  const [selectedFile, setselectedFile] = useState([]);
+  const [selectedFile, setselectedFile] = useState([]); // File upload
 
-  const [Filename, setFilename] = useState([])
+  const [Filename, setFilename] = useState([]);
 
-  const currentSetConverter = useSelector((state) => state.reducer.value);
+  const currentSetConverter = useSelector((state) => state.reducer.value); // Dropdown Value stored in Redux state
 
   const fileArray = useSelector((state) => state.reducer.fileValue);
 
   const dispatch = useDispatch();
+
+  const deleteElement = React.useCallback(
+    (index) => {
+      console.log(index, selectedFile);
+      console.log([...selectedFile].splice(index, 1));
+      setselectedFile(() => selectedFile.filter((_, i) => i !== index));
+    },
+    [selectedFile]
+  );
+
+  React.useEffect(() => {
+    const data = selectedFile.map((item) => {
+      return {
+        name: item.name,
+        convertFrom: "",
+        convertTo: "",
+      };
+    });
+    console.log({
+      "Formdata/fileData": [data],
+    });
+    // [a,s,d,f][s,d,c,v]
+    // setFilename((prev)=>[...data, ...prev]);
+    setFilename(data);
+  }, [selectedFile]);
 
   const handleFile = (event) => {
     // console.log(document.getElementById("fileInput"))
@@ -43,12 +69,16 @@ export default function Main() {
   };
   // Now send the redux state of both SetConverters to the backend via Axios
 
-  const fileData = new FormData()
-  for (let i in selectedFile) {
-    if (!selectedFile[i]) continue;
-    let filename = Filename[i].name + "." + Filename[i].type.replace('', '').toLowerCase().trim()
-      fileData.append(`file${i}`, selectedFile[i], filename)
-      }
+  // const fileData = new FormData();
+  // for (let i in selectedFile) {
+  //   if (!selectedFile[i]) continue;
+  //   let filename =
+  //     Filename[i].name +
+  //     "." +
+  //     Filename[i].type.replace("", "").toLowerCase().trim();
+  //   fileData.append(`file${i}`, selectedFile[i], filename);
+  // }
+
   async function uploadFiles() {
     // await axios({
     //   method: 'post',
@@ -64,24 +94,23 @@ export default function Main() {
     //     console.log(err)
     //   })
   }
-  
 
-  function convertFileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
+  // function convertFileToBase64(file) {
+  //   return new Promise((resolve, reject) => {
+  //     const reader = new FileReader();
 
-      reader.onload = function (event) {
-        const base64String = event.target.result.split(",")[1];
-        resolve(base64String);
-      };
+  //     reader.onload = function (event) {
+  //       const base64String = event.target.result.split(",")[1];
+  //       resolve(base64String);
+  //     };
 
-      reader.onerror = function (error) {
-        reject(error);
-      };
+  //     reader.onerror = function (error) {
+  //       reject(error);
+  //     };
 
-      reader.readAsDataURL(file);
-    });
-  }
+  //     reader.readAsDataURL(file);
+  //   });
+  // }
 
   return (
     <div className="bg-white">
@@ -176,15 +205,12 @@ export default function Main() {
             <a
               href="#"
               className="text-sm font-semibold leading-6 text-gray-900"
-              onClick={() =>
-                document
-                  .getElementById("headlessui-popover-button-:r6:")
-                  .click()
-              }
+              onClick={() => document.getElementById("Pricing").click()}
+
             >
               Buy Plan <span aria-hidden="true">→</span>
             </a>
-          </div>
+          </div> 
         </div>
         <div className="flex items-center justify-between">
           <div className="text-5xl font-semibold tracking-tight text-gray-900 py-12">
@@ -237,24 +263,6 @@ export default function Main() {
               <Dropdown2 />
             )}
           </div>
-          {/* <div>
-            <button className="rounded-full border-black border-0 mx-10 p-3 bg-indigo-300 hover:bg-indigo-100 ease-linear duration-100">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="w-6 h-6"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21L21 17.25"
-                />
-              </svg>
-            </button>
-          </div> */}
         </div>
         <div className="flex flex-row items-center justify-center">
           <div className="my-5">
@@ -287,18 +295,19 @@ export default function Main() {
                   Select File
                   <span>
                     <input
+                      multiple
                       type="file"
                       className="hidden"
                       id="fileInput"
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         e.persist();
                         let files = e.target.files;
-                        // setselectedFile(files)
-                        const data = [...files].map((item)=>item.name)
-                        setFilename(data)
-                        console.log([...files])
-                        const input = document.getElementById("fileInput");
-                        console.log(data)
+                        setselectedFile((prev) => [...prev, ...files]); // change needed
+                        // console.log({
+                        // "Destructured File Array": [...files],
+                        // "Selected": [selectedFile],
+                        // });
+                        // const input = document.getElementById("fileInput");
                       }}
                     ></input>
                   </span>
@@ -336,38 +345,9 @@ export default function Main() {
                 enter="transition ease-out duration-100"
                 enterFrom="transform opacity-0 scale-95"
                 enterTo="transform opacity-100 scale-100"
-                // leave="transition ease-in duration-75"
-                // leaveFrom="transform opacity-100 scale-100"
-                // leaveTo="transform opacity-0 scale-95"
               >
                 <Menu.Items className="absolute right-0 z-10 mt-2 w-56 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   <div className="py-1">
-                    {/* <div className="py-1">
-                        </div> */}
-                    <Menu.Item>
-                      {({ active }) => (
-                        <a
-                          href="#"
-                          className={classNames(
-                            active
-                              ? "bg-gray-200 text-gray-900"
-                              : "text-gray-700",
-                            "group flex items-center px-4 py-2 text-sm font-bold"
-                          )}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            fill="currentColor"
-                            class="w-6 h-6"
-                          >
-                            <path d="M9.97.97a.75.75 0 011.06 0l3 3a.75.75 0 01-1.06 1.06l-1.72-1.72v3.44h-1.5V3.31L8.03 5.03a.75.75 0 01-1.06-1.06l3-3zM9.75 6.75v6a.75.75 0 001.5 0v-6h3a3 3 0 013 3v7.5a3 3 0 01-3 3h-7.5a3 3 0 01-3-3v-7.5a3 3 0 013-3h3z" />
-                            <path d="M7.151 21.75a2.999 2.999 0 002.599 1.5h7.5a3 3 0 003-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 01-4.5 4.5H7.151z" />
-                          </svg>
-                          Upload file from PC
-                        </a>
-                      )}
-                    </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
                         <a
@@ -396,34 +376,36 @@ export default function Main() {
                       )}
                     </Menu.Item>
                   </div>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <a
-                        href="#"
-                        className={classNames(
-                          active
-                            ? "bg-gray-100 text-gray-900"
-                            : "text-gray-700",
-                          "group flex items-center px-4 py-2 text-sm font-semibold"
-                        )}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          class="w-6 h-6"
+                  <div className="py-1">
+                    <Menu.Item>
+                      {({ active }) => (
+                        <a
+                          href="#"
+                          className={classNames(
+                            active
+                              ? "bg-gray-100 text-gray-900"
+                              : "text-gray-700",
+                            "group flex items-center px-4 py-2 text-sm font-semibold"
+                          )}
                         >
-                          <path
-                            fill-rule="evenodd"
-                            d="M19.902 4.098a3.75 3.75 0 00-5.304 0l-4.5 4.5a3.75 3.75 0 001.035 6.037.75.75 0 01-.646 1.353 5.25 5.25 0 01-1.449-8.45l4.5-4.5a5.25 5.25 0 117.424 7.424l-1.757 1.757a.75.75 0 11-1.06-1.06l1.757-1.757a3.75 3.75 0 000-5.304zm-7.389 4.267a.75.75 0 011-.353 5.25 5.25 0 011.449 8.45l-4.5 4.5a5.25 5.25 0 11-7.424-7.424l1.757-1.757a.75.75 0 111.06 1.06l-1.757 1.757a3.75 3.75 0 105.304 5.304l4.5-4.5a3.75 3.75 0 00-1.035-6.037.75.75 0 01-.354-1z"
-                            clip-rule="evenodd"
-                          />
-                        </svg>
-                        One Drive Link
-                      </a>
-                    )}
-                  </Menu.Item>
-                  <div className="py-1"></div>
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                            class="w-6 h-6"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M19.902 4.098a3.75 3.75 0 00-5.304 0l-4.5 4.5a3.75 3.75 0 001.035 6.037.75.75 0 01-.646 1.353 5.25 5.25 0 01-1.449-8.45l4.5-4.5a5.25 5.25 0 117.424 7.424l-1.757 1.757a.75.75 0 11-1.06-1.06l1.757-1.757a3.75 3.75 0 000-5.304zm-7.389 4.267a.75.75 0 011-.353 5.25 5.25 0 011.449 8.45l-4.5 4.5a5.25 5.25 0 11-7.424-7.424l1.757-1.757a.75.75 0 111.06 1.06l-1.757 1.757a3.75 3.75 0 105.304 5.304l4.5-4.5a3.75 3.75 0 00-1.035-6.037.75.75 0 01-.354-1z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                          One Drive Link
+                        </a>
+                      )}
+                    </Menu.Item>
+                  </div>
+                  {/* <div className="py-1"></div> */}
                 </Menu.Items>
               </Transition>
             </Menu>
@@ -432,7 +414,15 @@ export default function Main() {
       </div>
       <div>
         {/* File table that will show the selected file to convert */}
-        {!!Filename.length && <Filetable props={selectedFile} filename={Filename} />}
+        {!!Filename.length && (
+          <Filetable
+            props={selectedFile}
+            filename={Filename}
+            deletefunc={deleteElement}
+            func={handleFile}
+            setFilename={setFilename}
+          />
+        )}
       </div>
       <div className="mx-auto sm:grid grid-cols-1 grid lg:grid-cols-2 lg:max-w-3xl lg:min-w-fit px-10 py-10">
         <div className="flex flex-row items-center mb-10">

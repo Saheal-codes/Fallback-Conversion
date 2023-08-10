@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useSelector, useDispatch } from "react-redux";
@@ -8,30 +8,36 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Dropdown1() {
+export default function Dropdown1(state) {
   const filekey = ["PDF", "DOC/DOCX", "ODT", "RTF", "TXT", "HTML", "", "", ""];
 
+  const ref = useRef();
+
   useEffect(() => {
-    document.getElementById("Openit1")?.click();
+    ref.current?.click();
   }, []);
 
   const dispatch = useDispatch();
 
   const currentSetConverter = useSelector((state) => state.reducer.value);
- 
+
   const currentSetFromConverter = useSelector(
     (state) => state.reducer.converterValuefrom
   );
 
   return (
-    <Menu as="div" className="relative inline-block text-left mx-5 justify-end mr-0">
+    <Menu
+      as="div"
+      className="relative inline-block text-left mx-5 justify-end mr-0"
+    >
       <div className="">
         <Menu.Button
-          id="Openit1"
+          ref={(r) => (ref.current = r)}
+          id={state.id || "Openit1"}
           className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white  px-3 py-2 text-lg font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         >
-          {currentSetFromConverter? currentSetFromConverter : "Select Unit"}
-          
+          {state.value || currentSetFromConverter || "Select Unit"}
+
           <ChevronDownIcon
             className="-mr-1 h-5 w-5 text-gray-400"
             aria-hidden="true"
@@ -67,11 +73,19 @@ export default function Dropdown1() {
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
                       "block px-4 py-2 text-md font-semibold"
                     )}
-                    onClick={() => {
-                      console.log("Select Unit Clicked");
-                      document.getElementById("Openit1")?.click();
-                      document.getElementById("Openit2")?.click();
-                      dispatch(converterStatefrom(item));
+                    onClick={(e) => {
+                      e.persist();
+                      if (!state.id) {
+                        document.getElementById("Openit1")?.click();
+                        document.getElementById("Openit2")?.click();
+                      } else {
+                        ref.current?.click();
+                        document.querySelector(`#second_${state.id}`)?.click();
+                      }
+
+                      state.onChange
+                        ? state.onChange(item)
+                        : dispatch(converterStatefrom(item));
                     }}
                   >
                     {item}

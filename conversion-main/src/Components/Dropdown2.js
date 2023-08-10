@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useRef, useEffect } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { useSelector, useDispatch } from "react-redux";
@@ -8,10 +8,16 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Dropdown2() {
+export default function Dropdown2({ id, onChange, value }) {
   const filekey = ["PDF", "DOC/DOCX", "ODT", "RTF", "TXT", "HTML", "", "", ""];
 
-  const dispatch = useDispatch()
+  const ref = useRef();
+
+  // useEffect(() => {
+  //   ref.current?.click();
+  // }, []);
+
+  const dispatch = useDispatch();
 
   const currentSetConverter = useSelector((state) => state.reducer.value);
 
@@ -23,10 +29,11 @@ export default function Dropdown2() {
     <Menu as="div" className="relative inline-block text-left mx-5 mr-0">
       <div className="">
         <Menu.Button
-          id="Openit2"
+          // ref={r=>ref.current =r}
+          id={id || "Openit2"}
           className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white  px-3 py-2 text-lg font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
         >
-          {currentSetToConverter ? currentSetToConverter: "Select Unit"}
+          {value || currentSetToConverter || "Select Unit"}
           <ChevronDownIcon
             className="-mr-1 h-5 w-5 text-gray-400"
             aria-hidden="true"
@@ -60,9 +67,13 @@ export default function Dropdown2() {
                     // href="#"
                     className={classNames(
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "block px-4 py-2 text-sm"
+                      "block px-4 py-2 text-md font-semibold"
                     )}
-                    onClick={(e)=>dispatch(converterStateto(item))}
+                    onClick={(e) => {
+                      onChange
+                        ? onChange(item)
+                        : dispatch(converterStateto(item));
+                    }}
                   >
                     {item}
                   </a>

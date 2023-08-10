@@ -97,11 +97,56 @@ const navigation = {
         <div className="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
           <div className="xl:grid xl:grid-cols-3 xl:gap-8">
             <div className="space-y-8">
-              <img
+              {/* Starting here */}
+
+              {/* <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1292.15 312.31">
+  <defs>
+    
+    <filter id="filter">
+      <feOffset dx="1.3" dy="1.5" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="2.3" result="blur"/>
+      <feFlood/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <linearGradient id="linear-gradient" x1="315.33" y1="156.16" x2="491.34" y2="156.16" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#662d91"/>
+      <stop offset="0.06" stop-color="#5849a3"/>
+      <stop offset="0.19" stop-color="#3d7dc4"/>
+      <stop offset="0.28" stop-color="#2d9ed9"/>
+      <stop offset="0.34" stop-color="#27aae1"/>
+      <stop offset="0.44" stop-color="#29a5de"/>
+      <stop offset="0.55" stop-color="#3098d6"/>
+      <stop offset="0.67" stop-color="#3b82c8"/>
+      <stop offset="0.79" stop-color="#4a65b5"/>
+      <stop offset="0.86" stop-color="#564ea6"/>
+      <stop offset="0.95" stop-color="#623697"/>
+      <stop offset="1" stop-color="#662d91"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="444.19" y1="156.16" x2="620.2" y2="156.16" xlink:href="#linear-gradient"/>
+  </defs>
+  <g id="Layer_2" data-name="Layer 2">
+    <g id="Layer_1-2" data-name="Layer 1">
+      <g class="cls-1">
+        <text class="cls-2" transform="translate(0 242.5)">FA<tspan class="cls-3" x="306.8" y="0" xml:space="preserve">    </tspan><tspan class="cls-4" x="644" y="0">BACK</tspan></text>
+        <g>
+          <path class="cls-5" d="M491.34,0,322.52,155.42a22.29,22.29,0,0,0-.66,32.16L446.59,312.31"/>
+          <path class="cls-6" d="M620.2,0,451.38,155.42a22.29,22.29,0,0,0-.66,32.16L575.45,312.31"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg> */}
+
+
+
+
+
+              {/* <img
                 className="h-7"
-                src="Fallback.jpg"
+                src="Asset 2.svg"
                 alt="Company name"
-              />
+              /> */}
               <p className="text-sm leading-6 text-gray-300">
                 Constructing better digital worlds.
               </p>

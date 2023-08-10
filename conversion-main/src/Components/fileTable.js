@@ -17,10 +17,30 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Filetable({ props, filename }) {
+export default function Filetable({
+  props,
+  filename,
+  setFilename,
+  func,
+  deletefunc,
+}) {
   const fileValue = useSelector((state) => state.reducer.fileValue);
+  const [Delete, setDelete] = React.useState(0);
 
-  console.log("File Value", fileValue);
+  const handleClick = () => {
+    func();
+  };
+
+  const deleteElement = React.useCallback((index) => {
+    // if (index !== -1) {
+    //   console.log(index)
+    //   console.log(filename)
+    //   setFilename((prev)=>prev.splice(index, 1));
+    //   console.log(filename)
+    // }
+  }, []);
+
+  // console.log("File Value", fileValue);
   // function convertBase64ToFile(base64String, fileType) {
   //   const byteCharacters = atob(base64String);
   //   const byteArrays = [];
@@ -68,13 +88,14 @@ export default function Filetable({ props, filename }) {
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <p className="mt-2 text-sm text-gray-700">
-            A list of all the files you want to convert.
+            A list of all the files you want to convert :
           </p>
         </div>
         <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
           <button
             type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-slate-700 shadow-md hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+            onClick={handleClick}
           >
             Add More Files
           </button>
@@ -86,33 +107,33 @@ export default function Filetable({ props, filename }) {
             <table className="min-w-full border-separate border-spacing-0">
               <thead>
                 <tr>
-                <th
+                  <th
                     scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                    className=" top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
                   >
                     Index
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
+                    className=" top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:pl-6 lg:pl-8"
                   >
                     File Name
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell"
+                    className=" top-0 z-10 hidden text-center border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter sm:table-cell"
                   >
                     Covert From
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 z-10 hidden border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-left text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
+                    className=" top-0 z-10 hidden text-center border-b border-gray-300 bg-white bg-opacity-75 px-3 py-3.5 text-sm font-semibold text-gray-900 backdrop-blur backdrop-filter lg:table-cell"
                   >
                     Convert To
                   </th>
                   <th
                     scope="col"
-                    className="sticky top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
+                    className=" top-0 z-10 border-b border-gray-300 bg-white bg-opacity-75 py-3.5 pl-3 pr-4 backdrop-blur backdrop-filter sm:pr-6 lg:pr-8"
                   >
                     <span className="sr-only">Edit</span>
                   </th>
@@ -129,8 +150,7 @@ export default function Filetable({ props, filename }) {
                         "whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8"
                       )}
                     >
-                      {[personIdx+1]}
-                      
+                      {[personIdx + 1]}
                     </td>
                     <td
                       className={classNames(
@@ -140,46 +160,89 @@ export default function Filetable({ props, filename }) {
                         "whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8"
                       )}
                     >
-                      {filename[personIdx]}
-                      
+                      {item.name}
                     </td>
                     <td
-                      key={personIdx}
                       className={classNames(
                         personIdx !== props.length - 1
                           ? "border-b border-gray-200"
                           : "",
-                        "whitespace-nowrap hidden px-3 py-4 text-sm text-gray-500 sm:table-cell"
+                        "whitespace-nowrap hidden px-3 py-4 text-sm text-gray-500 sm:table-cell text-center"
                       )}
                     >
-                      <Dropdown1 />
+                      <Dropdown1
+                        value={item.convertFrom}
+                        onChange={(e) => {
+                          setFilename((f) =>
+                            f.map((item, index) =>
+                              index === personIdx
+                                ? {
+                                    ...item,
+                                    convertFrom: e,
+                                  }
+                                : item
+                            )
+                          );
+                        }}
+                        id={personIdx + 1}
+                      />
                     </td>
                     <td
-                      key={personIdx}
                       className={classNames(
                         personIdx !== props.length - 1
                           ? "border-b border-gray-200"
                           : "",
-                        "whitespace-nowrap hidden px-3 py-4 text-sm text-gray-500 lg:table-cell"
+                        "whitespace-nowrap hidden px-3 py-4 text-sm text-gray-500 lg:table-cell text-center"
                       )}
                     >
-                      <Dropdown2 />
+                      <Dropdown2
+                        id={`second_${personIdx + 1}`}
+                        value={item.convertTo}
+                        onChange={(e) => {
+                          setFilename((f) =>
+                            f.map((item, index) =>
+                              index === personIdx
+                                ? {
+                                    ...item,
+                                    convertTo: e,
+                                  }
+                                : item
+                            )
+                          );
+                        }}
+                      />
                     </td>
                     <td
-                      key={personIdx}
                       className={classNames(
                         personIdx !== props.length - 1
                           ? "border-b border-gray-200"
                           : "",
-                        "relative whitespace-nowrap py-4 pr-4 pl-3 text-right text-sm font-medium sm:pr-8 lg:pr-8"
+                        "relative whitespace-nowrap py-4 pr-4 pl-3  text-sm font-medium sm:pr-8 lg:pr-8 text-center"
                       )}
                     >
                       <a
-                        onClick={() => console.log(fileValue)}
-                        className="text-indigo-600 hover:text-indigo-900"
+                        onClick={() => {
+                          // deleteElement(personIdx);
+                          deletefunc(personIdx);
+                          setDelete((prev) => {
+                            return prev + 1;
+                          });
+                          console.log("Delete Pressed" + Delete + "Times");
+                        }}
+                        className="text-indigo-600 hover:text-gray-700 hover:cursor-pointer "
                       >
-                        Edit<span className="sr-only">, {item.name}</span>
+                        Delete
+                        <span className=""> {item.name}</span>
                       </a>
+                    </td>
+                    <td className="border-b border-t border-gray-200 relative whitespace-nowrap py-4 pl-3 text-right text-sm font-medium sm:pr-8 lg:pr-6">
+                      <button
+                        type="button"
+                        className=" rounded-xl  bg-slate-900 px-4 py-3 text-center text-sm font-semibold text-white shadow-lg hover:bg-gray-200 hover:text-black ease-linear duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                        onClick={handleClick}
+                      >
+                        Convert File
+                      </button>
                     </td>
                   </tr>
                 ))}

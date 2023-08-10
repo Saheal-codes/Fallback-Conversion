@@ -17,6 +17,7 @@ import {
 } from "@heroicons/react/20/solid";
 import { useDispatch, useSelector } from "react-redux";
 import { increment } from "../reducer/reducer1";
+import Unitconverter from "./Unitconverter";
 
 const products = [
   {
@@ -36,7 +37,7 @@ const products = [
   },
   {
     name: "Unit Converter",
-    href: "#",
+    href: "/unitconverter",
     icon: SquaresPlusIcon,
   },
   {
@@ -177,7 +178,7 @@ export default function Header() {
                           >
                             <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
                               <item.icon
-                                className="h-6 w-6 text-gray-600 group-hover:text-indigo-600"
+                                className="h-6 w-6 text-gray-600 group-hover:text-indigo-700"
                                 aria-hidden="true"
                               />
                             </div>
@@ -201,11 +202,12 @@ export default function Header() {
                                 href={item.href}
                                 className="flex items-center justify-center gap-x-2.5 p-3 text-sm font-semibold leading-6 text-gray-900 hover:bg-gray-100"
                               >
+                                {item.name}
+                                
                                 <item.icon
                                   className="h-5 w-5 flex-none text-gray-400"
                                   aria-hidden="true"
                                 />
-                                {item.name}
                               </a>
                             ))}
                           </div>
@@ -218,7 +220,9 @@ export default function Header() {
             </Popover>
             <Popover.Group className="hidden lg:flex lg:gap-x-12">
               <Popover className="relative">
-                <Popover.Button className="flex items-center gap-x-1 text-2xl font-semibold leading-6 text-gray-900">
+                <Popover.Button
+                id="Pricing" 
+                className="flex items-center gap-x-1 text-2xl font-semibold leading-6 text-gray-900">
                   Pricing
                   <ChevronDownIcon
                     className="h-5 w-5 flex-none text-gray-400"
@@ -319,7 +323,7 @@ export default function Header() {
           <div className="flex items-center justify-between">
             <a href="#" className="-m-1.5 p-1.5">
               <span className="sr-only">Fallback Inc.</span>
-              <img className="h-8 w-auto" src="logo.png" alt="" />
+              <img className="h-8 w-auto" src="logo.png" alt="Fallback.co" />
             </a>
             <button
               type="button"
@@ -339,7 +343,7 @@ export default function Header() {
                   {({ open }) => (
                     <>
                       <Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 hover:bg-gray-50">
-                        Product
+                        Tools
                         <ChevronDownIcon
                           className={classNames(
                             open ? "rotate-180" : "",
@@ -349,7 +353,40 @@ export default function Header() {
                         />
                       </Disclosure.Button>
                       <Disclosure.Panel className="mt-2 space-y-2">
-                        {[...products, ...callsToAction].map((item) => (
+                        {[...products].map((item) => (
+                          <Disclosure.Button
+                            key={item.name}
+                            as="a"
+                            href={item.href}
+                            onClick={(e)=>{
+                              dispatch(increment(item.name));
+                              setMobileMenuOpen(false);
+                              
+                            }}
+                            className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                          >
+                            {item.name}
+                          </Disclosure.Button>
+                        ))}
+                      </Disclosure.Panel>
+                    </>
+                  )}
+                </Disclosure>
+                <Disclosure as="div" className="-mx-3">
+                  {({ open }) => (
+                    <>
+                      <Disclosure.Button className="flex w-full items-center justify-between rounded-lg py-2 pl-3 pr-3.5 text-base font-semibold leading-7 hover:bg-gray-50">
+                        Pricing
+                        <ChevronDownIcon
+                          className={classNames(
+                            open ? "rotate-180" : "",
+                            "h-5 w-5 flex-none"
+                          )}
+                          aria-hidden="true"
+                        />
+                      </Disclosure.Button>
+                      <Disclosure.Panel className="mt-2 space-y-2">
+                        {[...pricing].map((item) => (
                           <Disclosure.Button
                             key={item.name}
                             as="a"
@@ -365,15 +402,10 @@ export default function Header() {
                 </Disclosure>
                 <a
                   href="#"
+                  // onClick={}
                   className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                 >
-                  Features
-                </a>
-                <a
-                  href="#"
-                  className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                >
-                  Marketplace
+                  Login 
                 </a>
                 <a
                   href="#"
